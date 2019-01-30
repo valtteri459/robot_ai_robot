@@ -3,7 +3,15 @@ const Raspistill = require('node-raspistill').Raspistill;
 const i2cBus = require('i2c-bus')
 const servoDriver = require('pca9685').Pca9685Driver
 const app = express()
-
+/* 
+servo 0
+	coin hopper: 530
+	camera: 320
+	drop: 150
+servo 1
+	leftmost: 465
+	rightmost: 240
+*/
 
 var options = {
 	i2c: i2cBus.openSync(1),
