@@ -25,8 +25,7 @@ const camera = new Raspistill({
 	noPreview: true,
 	height: 100,
 	width: 100,
-	time: 1000,
-	awb: 'off'
+	time: 1000
 });
 
 var pwm = new servoDriver(options, (err) => {
