@@ -1,0 +1,20 @@
+{
+  "name": "robot",
+  "version": "1.0.0",
+  "description": "thesis robot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "valtteri",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "i2c-bus": "^4.0.7",
+    "node-raspistill": "0.0.16",
+    "pca9685": "^4.0.3",
+    "pi-camera": "^1.2.1",
+    "socket.io": "^2.2.0"
+  }
+}
