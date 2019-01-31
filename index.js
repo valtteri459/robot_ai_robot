@@ -53,6 +53,9 @@ var pwm = new servoDriver(options, (err) => {
 	 });*/
 	 io.on('connection', socket => {
 		 console.log('user connected!')
+		 socket.on('disconnect', (reason) => {
+			 console.log('user disconnected', reason)
+		 })
 	 })
 	 io.on('servo', data => {
 		 console.log(data)
