@@ -51,7 +51,11 @@ var pwm = new servoDriver(options, (err) => {
       }
 		});
 	 });*/
+	 io.on('connection', socket => {
+		 console.log('user connected!')
+	 })
 	 io.on('servoSet', data => {
+		 console.log(data)
 		 var servo = data.channel
 		 var val = data.val > 150 ? data.val < 600 ? data.val : 600 : 150
 		 pwm.setPulseRange(servo, 0, val, (err) => {
