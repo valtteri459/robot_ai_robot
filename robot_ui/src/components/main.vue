@@ -52,7 +52,7 @@ export default {
       this.powerState = newState
     }
   },
-  mounted() {
+  mounted () {
     this.$socket.emit('getpower', true)
   }
 }

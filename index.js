@@ -53,11 +53,13 @@ var pwm = new servoDriver(options, (err) => {
 	 });*/
 	 var power = true /* let motors turn */
 	 io.on('connection', socket => {
-		 console.log('user connected!')
-		 socket.on('getpower', () => {
-			 socket.emit('power', power)
-		 })
-		 socket.on('setpower', (newPower) => {
+		console.log('user connected!')
+		socket.on('getpower', () => {
+			console.log('get power requested')
+			socket.emit('power', power)
+		})
+		socket.on('setpower', (newPower) => {
+			console.log('socket power state set', newPower)
 			power = newPower
 			if(power) {
 				pwm.channelOff(0)
@@ -66,8 +68,8 @@ var pwm = new servoDriver(options, (err) => {
 				pwm.channelOn(0)
 				pwm.channelOn(1)
 			}
-		 })
-		 socket.on('servo', data => {
+		})
+		socket.on('servo', data => {
 			console.log(data)
 			var servo = data.channel
 			var val = data.val > 150 ? data.val < 600 ? data.val : 600 : 150
