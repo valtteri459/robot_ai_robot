@@ -72,7 +72,7 @@ var pwm = new servoDriver(options, (err) => {
 		})
 		socket.on('servo', data => {
 			console.log(data)
-			if(!power) {
+			if(power) {
 				var servo = data.channel
 				var val = data.val > 150 ? data.val < 600 ? data.val : 600 : 150
 				pwm.setPulseRange(servo, 0, val, (err) => {
