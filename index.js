@@ -68,6 +68,7 @@ var pwm = new servoDriver(options, (err) => {
 				pwm.channelOn(0)
 				pwm.channelOn(1)
 			}
+			socket.emit('power', power)
 		})
 		socket.on('servo', data => {
 			console.log(data)

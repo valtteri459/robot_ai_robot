@@ -41,14 +41,15 @@ export default {
       this.$socket.emit('servo', { channel: this.channel, val: this.val })
     },
     switchPower () {
+      console.log(this.powerState)
       this.$socket.emit('setpower', !this.powerState)
     }
   },
   sockets: {
-    connect: () => {
+    connect () {
       console.log('socket connected!')
     },
-    power: (newState) => {
+    power (newState) {
       this.powerState = newState
     }
   },
