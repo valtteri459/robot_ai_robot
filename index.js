@@ -72,13 +72,15 @@ var pwm = new servoDriver(options, (err) => {
 		})
 		socket.on('servo', data => {
 			console.log(data)
-			var servo = data.channel
-			var val = data.val > 150 ? data.val < 600 ? data.val : 600 : 150
-			pwm.setPulseRange(servo, 0, val, (err) => {
-				if(err) {
-					console.log(err)
-				}
-			})
+			if(!power) {
+				var servo = data.channel
+				var val = data.val > 150 ? data.val < 600 ? data.val : 600 : 150
+				pwm.setPulseRange(servo, 0, val, (err) => {
+					if(err) {
+						console.log(err)
+					}
+				})
+			}
 		})
 		socket.on('disconnect', (reason) => {
 			 console.log('user disconnected', reason)
