@@ -143,9 +143,13 @@ var pwm = new servoDriver(options, (err) => {
 	 var pictureCoin = () => {
 		return new Promise((resolve, reject) => {
 			motors.hopper().then(() => {
-				sleep(100).then(() => {
+				console.log('hopper')
+				sleep(500).then(() => {
+					console.log('sleep')
 					motors.camera().then(() => {
+						console.log('camera')
 						camera.takePhoto().then((photo) => {
+							console.log('photo taken')
 							return photo
 						}).catch(e=>reject)
 					}).catch(e=>reject)
