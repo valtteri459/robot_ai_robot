@@ -140,8 +140,20 @@ var pwm = new servoDriver(options, (err) => {
 			})
 		}
 	 }
-
-
+	 var pictureCoin = () => {
+		return new Promise((resolve, reject) => {
+			motors.hopper().then(() => {
+				sleep(100).then(() => {
+					camera.takePhoto().then((photo) => {
+						return photo
+					}).catch(e=>reject)
+				}).catch(e=>reject)
+			}).catch(e=>reject)
+		})
+	 }
+	 var detectCoin = (image) => {
+		
+	 }
 
 	 io.on('connection', socket => {
 		console.log('user connected!')
@@ -197,6 +209,12 @@ var pwm = new servoDriver(options, (err) => {
 		socket.on('newPhoto', data => {
 			camera.takePhoto().then((photo) => {
 				socket.emit('coinPhoto', 'data:image/jpg;base64,' + photo.toString('base64'))
+			}).catch(e => {console.log(e);socket.emit('console', e)})
+		})
+		socket.on('newCoin', () => {
+			pictureCoin().then(coinImage => {
+				socket.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
+				console.log(typeof coinImage, coinImage)
 			}).catch(e => {console.log(e);socket.emit('console', e)})
 		})
 

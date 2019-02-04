@@ -3,7 +3,7 @@ import './plugins/vuetify'
 import App from './App.vue'
 import VueSocketIO from 'vue-socket.io'
 Vue.use(new VueSocketIO({
-  debug: true,
+  debug: false,
   connection: 'http://localhost:8080'
 }))
 Vue.config.productionTip = false
