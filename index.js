@@ -196,7 +196,7 @@ var pwm = new servoDriver(options, (err) => {
 
 		socket.on('newPhoto', data => {
 			camera.takePhoto().then((photo) => {
-				socket.emit('coinPhoto', btoa('data:image/jpg;base64,' + photo.toString('base64')))
+				socket.emit('coinPhoto', 'data:image/jpg;base64,' + photo.toString('base64'))
 			}).catch(e => {console.log(e);socket.emit('console', e)})
 		})
 
