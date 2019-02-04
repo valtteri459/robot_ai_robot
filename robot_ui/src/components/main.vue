@@ -23,6 +23,13 @@
         <v-btn color="primary" @click="rotor(1)">kamera</v-btn>
         <v-btn color="primary" @click="rotor(2)">tiputin</v-btn>
       </v-flex>
+      <v-flex mb-4>
+        <h1 class="display-2 font-weight-bold mb-3">
+          KuvaTest
+        </h1>
+        <v-btn color="primary" @click="camera()">Ota kuva</v-btn>
+        <img :src='imageData' v-if='imageData'/>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -30,10 +37,12 @@
 <script>
 export default {
   data: () => ({
-    powerState: true
+    powerState: true,
+    imageData: false
   }),
   methods: {
     // 'newPhoto', 'rotor (0,1,2)', 'slot(num, 0,1,2,3,4)
+    // 'coinPhoto', 'console'
     slot (slotNum) {
       this.$socket.emit('slot', slotNum)
     },
@@ -57,6 +66,9 @@ export default {
     },
     console (data) {
       console.log('FROM SOCKET', data)
+    },
+    coinPhoto (img) {
+      this.imageData = img
     }
   },
   mounted () {
