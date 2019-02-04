@@ -13,6 +13,12 @@ servo 0
 servo 1
 	leftmost: 465
 	rightmost: 240
+hopper spots
+	0:240
+	1:296
+	2:352
+	3:408
+	4:465
 */
 app.use('/', express.static('public'))
 var options = {
@@ -52,8 +58,94 @@ var pwm = new servoDriver(options, (err) => {
 		});
 	 });*/
 	 var power = true /* let motors turn */
+	 var sleep = (ms) => {
+		 return new Promise((resolve, reject) => {
+			 setTimeout(() => {resolve('OK')}, ms)
+		 })
+	 }
+	 /*
+	 coin hopper: 530
+	camera: 320
+	drop: 150
+	 */
+	 var motors = {
+		coinSlot(slotNumber) {
+			if(!power) return reject('powered down')
+			return new Promise((resolve, reject) => {
+				var slot = 240
+				switch(slotNumber) {
+					case 0:
+						slot = 240
+						break;
+					case 1:
+						slot = 296
+						break;
+					case 2:
+						slot = 352
+						break;
+					case 3:
+						slot= 408
+						break;
+					case 4:
+						slot = 465
+						break;
+				}
+				pwm.setPulseRange(1, 0, slot, function() {
+					if (err) {
+						console.error("Error setting pulse range." + err);
+						reject(err)
+					} else {
+						resolve('OK')
+					}
+				});			
+			})
+		},
+		hopper() {
+			return new Promise((resolve, reject) => {
+				if(!power) return reject('powered down')
+				pwm.setPulseRange(0, 0, 530, function() {
+					if (err) {
+						console.error("Error setting pulse range." + err);
+						reject(err)
+					} else {
+						resolve('OK')
+					}
+				});			
+			})
+		},
+		camera() {
+			return new Promise((resolve, reject) => {
+				if(!power) return reject('powered down')
+				pwm.setPulseRange(0, 0, 320, function() {
+					if (err) {
+						console.error("Error setting pulse range." + err);
+						reject(err)
+					} else {
+						resolve('OK')
+					}
+				});			
+			})
+		},
+		dropper() {
+			return new Promise((resolve, reject) => {
+				if(!power) return reject('powered down')
+				pwm.setPulseRange(0, 0, 150, function() {
+					if (err) {
+						console.error("Error setting pulse range." + err);
+						reject(err)
+					} else {
+						resolve('OK')
+					}
+				});			
+			})
+		}
+	 }
+
+
+
 	 io.on('connection', socket => {
 		console.log('user connected!')
+		/*DEBUG START*/
 		socket.on('getpower', () => {
 			console.log('get power requested')
 			socket.emit('power', power)
@@ -82,6 +174,32 @@ var pwm = new servoDriver(options, (err) => {
 				})
 			}
 		})
+		socket.on('slot', num => {
+			motors.coinSlot(num).then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+		})
+		socket.on('rotor', state => {
+			switch(state){
+				case 0:
+					motors.hopper().then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+					break;
+				case 1:
+					motors.camera().then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+					break;
+				case 2:
+					motors.dropper().then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+					break;
+				default:
+					socket.emit('console', 'invalid data')
+			}
+		})
+		/*DEBUG END*/
+
+		socket.on('newPhoto', data => {
+			camera.takePhoto().then((photo) => {
+			socket.emit('coinPhoto', btoa('data:image/jpg;base64,' + btoa(String.fromCharCode.apply(null, image))))
+			}).catch(e => socket.emit('console', e))
+		})
+
 		socket.on('disconnect', (reason) => {
 			 console.log('user disconnected', reason)
 		 })
