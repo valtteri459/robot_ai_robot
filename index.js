@@ -150,7 +150,7 @@ var pwm = new servoDriver(options, (err) => {
 						console.log('camera')
 						camera.takePhoto().then((photo) => {
 							console.log('photo taken')
-							return photo
+							resolve(photo)
 						}).catch(e=>reject)
 					}).catch(e=>reject)
 				}).catch(e=>reject)
