@@ -220,7 +220,6 @@ var pwm = new servoDriver(options, (err) => {
 		socket.on('newCoin', () => {
 			pictureCoin().then(coinImage => {
 				socket.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
-				console.log(typeof coinImage, coinImage)
 			}).catch(e => {console.log(e);socket.emit('console', e)})
 		})
 
