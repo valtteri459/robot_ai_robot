@@ -27,7 +27,8 @@
         <h1 class="display-2 font-weight-bold mb-3">
           KuvaTest
         </h1>
-        <v-btn color="primary" @click="camera()">Ota kuva</v-btn><br/>
+        <v-btn color="primary" @click="camera()">Ota kuva</v-btn>
+        <v-btn color="primary" @click="newCoin()">kuvaa kolikko</v-btn><br/>
         <img :src='imageData' v-if='imageData'/>
       </v-flex>
     </v-layout>
@@ -51,6 +52,9 @@ export default {
     },
     camera () {
       this.$socket.emit('newPhoto', 1)
+    },
+    newCoin () {
+      this.$socket.emit('newCoin', 1)
     },
     switchPower () {
       console.log(this.powerState)
