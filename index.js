@@ -70,8 +70,8 @@ var pwm = new servoDriver(options, (err) => {
 	 */
 	 var motors = {
 		coinSlot(slotNumber) {
-			if(!power) return reject('powered down')
 			return new Promise((resolve, reject) => {
+				if(!power) return reject('powered down')
 				var slot = 240
 				switch(slotNumber) {
 					case 0:
