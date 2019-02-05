@@ -250,7 +250,7 @@ var pwm = new servoDriver(options, (err) => {
 			}
 			io.emit('console', 'loop started')
 		})
-		socket.get('getCoin', () => {
+		socket.on('getCoin', () => {
 			io.emit('coin', loadedCoins)
 		})
 		socket.on('setCoin', newCoin => {
