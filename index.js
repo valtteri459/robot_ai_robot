@@ -6,6 +6,7 @@ const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const jpeg = require('jpeg-js')
+const fs = require('fs')
 /* 
 servo 0
 	coin hopper: 530
@@ -171,7 +172,17 @@ var pwm = new servoDriver(options, (err) => {
 	 var detectCoin = (image) => {
 		
 	 }
-
+	 var saveCoin = (image) => {
+		return new Promise((resolve, reject) => {
+			fs.writeFile('/train_images/'+loadedCoins+'/'+Date.now()+'.jpg', image, (err) => {
+				if(err) {
+					reject(err)
+				} else {
+					resolve('OK')
+				}
+			})
+		})
+	 }
 	 io.on('connection', socket => {
 		console.log('user connected!')
 		/*DEBUG START*/
@@ -243,11 +254,14 @@ var pwm = new servoDriver(options, (err) => {
 					console.log('coin pictured')
 					io.emit('console', 'coin pictured')
 					io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
-					motors.dropper().then(() => {
-						sleep(500).then(() => {
-							if(loopCoins) {
-								coinLooper()
-							}
+					saveCoin().then(() => {
+						io.emit('console', 'photo of coin saved on disk')
+						motors.dropper().then(() => {
+							sleep(500).then(() => {
+								if(loopCoins) {
+									coinLooper()
+								}
+							}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
 						}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
 					}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
 				}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
