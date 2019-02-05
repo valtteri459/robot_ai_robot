@@ -174,7 +174,7 @@ var pwm = new servoDriver(options, (err) => {
 	 }
 	 var saveCoin = (image) => {
 		return new Promise((resolve, reject) => {
-			var filename = '/train_images/'+loadedCoins+'/'+Date.now()+'.jpg'
+			var filename = __dirname + '/train_images/'+loadedCoins+'/'+Date.now()+'.jpg'
 			fs.writeFile(filename, image, (err) => {
 				if(err) {
 					reject(err)
