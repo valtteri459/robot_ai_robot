@@ -221,12 +221,46 @@ var pwm = new servoDriver(options, (err) => {
 		socket.on('newCoin', () => {
 			pictureCoin().then(coinImage => {
 				var pixels = jpeg.decode(coinImage, true)
-				console.log(coinImage[0], coinImage[1], coinImage[2], coinImage[3])
 				console.log(pixels)
-				console.log(pixels[0], pixels[1], pixels[2], pixels[3])
 				socket.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
 			}).catch(e => {console.log(e);socket.emit('console', e)})
 		})
+
+		var loopCoins = false;
+		var loadedCoins = 0;
+
+		var coinLooper = () => {
+			if(loopCoins) {
+				console.log('starting scan on coin')
+				sleep(500).then(() => {
+					if(loopCoins) {
+						coinLooper()
+					}
+				}).catch(e => {console.log(e);socket.emit('console', e)})
+			}
+		}
+
+		socket.on('getLoop', () => {
+			socket.emit('loop', loopCoins)
+		})
+		socket.on('setLoop', newLoop => {
+			loopCoins = newLoop
+			if(loopCoins) {
+				coinLooper()
+			}
+			socket.emit('console', 'loop started')
+		})
+		socket.get('getCoin', () => {
+			socket.emit('coin', loadedCoins)
+		})
+		socket.on('setCoin', newCoin => {
+			loadedCoins = newCoin
+			socket.emit('console', 'loaded coins set to '+newCoin)
+		})
+
+		socket.emit('power', power)
+		socket.emit('loop', loopCoins)
+		socket.emit('coin', loadedCoins)
 
 		socket.on('disconnect', (reason) => {
 			 console.log('user disconnected', reason)

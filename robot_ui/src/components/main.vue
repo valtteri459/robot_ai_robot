@@ -3,19 +3,19 @@
     <v-layout
       wrap
     >
-      <v-flex mb-4>
+      <v-flex xs6>
         <h1 class="display-2 font-weight-bold mb-3">
           tiputtimen sijainti
         </h1>
         <v-btn color="primary" v-for="num in [0,1,2,3,4]" :key="num" @click="slot(num)">slotti {{num}}</v-btn>
       </v-flex>
-      <v-flex mb-4>
+      <v-flex xs6>
         <h1 class="display-2 font-weight-bold mb-3">
           moottori status {{powerState}}
         </h1>
         <v-btn color="primary" @click="switchPower()">vaihda</v-btn>
       </v-flex>
-      <v-flex mb-4>
+      <v-flex xs6>
         <h1 class="display-2 font-weight-bold mb-3">
           roottori debug
         </h1>
@@ -23,13 +23,19 @@
         <v-btn color="primary" @click="rotor(1)">kamera</v-btn>
         <v-btn color="primary" @click="rotor(2)">tiputin</v-btn>
       </v-flex>
-      <v-flex mb-4>
+      <v-flex xs6>
         <h1 class="display-2 font-weight-bold mb-3">
           KuvaTest
         </h1>
         <v-btn color="primary" @click="camera()">Ota kuva</v-btn>
         <v-btn color="primary" @click="newCoin()">kuvaa kolikko</v-btn><br/>
         <img :src='imageData' v-if='imageData'/>
+      </v-flex>
+      <v-flex xs6>
+        <h1 class="display-2 font-weight-bold mb-3">
+          konsoli
+        </h1>
+        <textarea disabled v-model='consoleData' style="width:100%;min-height:250px"></textarea>
       </v-flex>
     </v-layout>
   </v-container>
@@ -39,7 +45,8 @@
 export default {
   data: () => ({
     powerState: true,
-    imageData: false
+    imageData: false,
+    consoleData: ''
   }),
   methods: {
     // 'newPhoto', 'rotor (0,1,2)', 'slot(num, 0,1,2,3,4)
@@ -69,6 +76,7 @@ export default {
       this.powerState = newState
     },
     console (data) {
+      this.consoleData = data + '\n' + this.consoleData
       console.log('FROM SOCKET', data)
     },
     coinPhoto (img) {
