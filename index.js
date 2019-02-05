@@ -174,11 +174,12 @@ var pwm = new servoDriver(options, (err) => {
 	 }
 	 var saveCoin = (image) => {
 		return new Promise((resolve, reject) => {
-			fs.writeFile('/train_images/'+loadedCoins+'/'+Date.now()+'.jpg', image, (err) => {
+			var filename = '/train_images/'+loadedCoins+'/'+Date.now()+'.jpg'
+			fs.writeFile(filename, image, (err) => {
 				if(err) {
 					reject(err)
 				} else {
-					resolve('OK')
+					resolve(filename)
 				}
 			})
 		})
@@ -254,8 +255,8 @@ var pwm = new servoDriver(options, (err) => {
 					console.log('coin pictured')
 					io.emit('console', 'coin pictured')
 					io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
-					saveCoin().then(() => {
-						io.emit('console', 'photo of coin saved on disk')
+					saveCoin().then((loc) => {
+						io.emit('console', 'photo of coin saved on disk - ' + loc)
 						motors.dropper().then(() => {
 							sleep(500).then(() => {
 								if(loopCoins) {
