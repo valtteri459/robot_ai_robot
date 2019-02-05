@@ -167,7 +167,7 @@ var pwm = new servoDriver(options, (err) => {
 		/*DEBUG START*/
 		socket.on('getpower', () => {
 			console.log('get power requested')
-			socket.emit('power', power)
+			io.emit('power', power)
 		})
 		socket.on('setpower', (newPower) => {
 			console.log('socket power state set', newPower)
@@ -179,7 +179,7 @@ var pwm = new servoDriver(options, (err) => {
 				pwm.channelOn(0)
 				pwm.channelOn(1)
 			}
-			socket.emit('power', power)
+			io.emit('power', power)
 		})
 		socket.on('servo', data => {
 			console.log(data)
@@ -194,36 +194,36 @@ var pwm = new servoDriver(options, (err) => {
 			}
 		})
 		socket.on('slot', num => {
-			motors.coinSlot(num).then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+			motors.coinSlot(num).then(e => {io.emit('console', e)}).catch(e => {io.emit('console', e)})
 		})
 		socket.on('rotor', state => {
 			switch(state){
 				case 0:
-					motors.hopper().then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+					motors.hopper().then(e => {io.emit('console', e)}).catch(e => {io.emit('console', e)})
 					break;
 				case 1:
-					motors.camera().then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+					motors.camera().then(e => {io.emit('console', e)}).catch(e => {io.emit('console', e)})
 					break;
 				case 2:
-					motors.dropper().then(e => {socket.emit('console', e)}).catch(e => {socket.emit('console', e)})
+					motors.dropper().then(e => {io.emit('console', e)}).catch(e => {io.emit('console', e)})
 					break;
 				default:
-					socket.emit('console', 'invalid data')
+					io.emit('console', 'invalid data')
 			}
 		})
 		/*DEBUG END*/
 
 		socket.on('newPhoto', data => {
 			camera.takePhoto().then((photo) => {
-				socket.emit('coinPhoto', 'data:image/jpg;base64,' + photo.toString('base64'))
-			}).catch(e => {console.log(e);socket.emit('console', e)})
+				io.emit('coinPhoto', 'data:image/jpg;base64,' + photo.toString('base64'))
+			}).catch(e => {console.log(e);io.emit('console', e)})
 		})
 		socket.on('newCoin', () => {
 			pictureCoin().then(coinImage => {
 				var pixels = jpeg.decode(coinImage, true)
 				console.log(pixels)
-				socket.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
-			}).catch(e => {console.log(e);socket.emit('console', e)})
+				io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
+			}).catch(e => {console.log(e);io.emit('console', e)})
 		})
 
 		var loopCoins = false;
@@ -236,31 +236,31 @@ var pwm = new servoDriver(options, (err) => {
 					if(loopCoins) {
 						coinLooper()
 					}
-				}).catch(e => {console.log(e);socket.emit('console', e)})
+				}).catch(e => {console.log(e);io.emit('console', e)})
 			}
 		}
 
 		socket.on('getLoop', () => {
-			socket.emit('loop', loopCoins)
+			io.emit('loop', loopCoins)
 		})
 		socket.on('setLoop', newLoop => {
 			loopCoins = newLoop
 			if(loopCoins) {
 				coinLooper()
 			}
-			socket.emit('console', 'loop started')
+			io.emit('console', 'loop started')
 		})
 		socket.get('getCoin', () => {
-			socket.emit('coin', loadedCoins)
+			io.emit('coin', loadedCoins)
 		})
 		socket.on('setCoin', newCoin => {
 			loadedCoins = newCoin
-			socket.emit('console', 'loaded coins set to '+newCoin)
+			io.emit('console', 'loaded coins set to '+newCoin)
 		})
 
-		socket.emit('power', power)
-		socket.emit('loop', loopCoins)
-		socket.emit('coin', loadedCoins)
+		io.emit('power', power)
+		io.emit('loop', loopCoins)
+		io.emit('coin', loadedCoins)
 
 		socket.on('disconnect', (reason) => {
 			 console.log('user disconnected', reason)
