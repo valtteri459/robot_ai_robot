@@ -93,7 +93,7 @@ var pwm = new servoDriver(options, (err) => {
 						slot = 465
 						break;
 				}
-				pwm.setPulseRange(1, 0, slot, function() {
+				pwm.setPulseRange(1, 0, slot, function(err) {
 					if (err) {
 						console.error("Error setting pulse range." + err);
 						reject(err)
@@ -106,12 +106,28 @@ var pwm = new servoDriver(options, (err) => {
 		hopper() {
 			return new Promise((resolve, reject) => {
 				if(!power) return reject('powered down')
-				pwm.setPulseRange(0, 0, 530, function() {
+				pwm.setPulseRange(0, 0, 530, function(err) {
 					if (err) {
 						console.error("Error setting pulse range." + err);
 						reject(err)
 					} else {
-						resolve('OK')
+						sleep(100).then(() => {
+							pwm.setPulseRange(0, 0, 510, function(errT) {
+								if (errT) {
+									reject(err)
+								} else {
+									sleep(100).then(() => {
+										pwm.setPulseRange(0, 0, 530, function (errTh) {
+											if (errTh) {
+												reject(errTh)
+											} else {
+												resolve('OK')
+											}
+										})
+									})
+								}
+							})
+						})
 					}
 				});			
 			})
@@ -119,7 +135,7 @@ var pwm = new servoDriver(options, (err) => {
 		camera() {
 			return new Promise((resolve, reject) => {
 				if(!power) return reject('powered down')
-				pwm.setPulseRange(0, 0, 320, function() {
+				pwm.setPulseRange(0, 0, 320, function(err) {
 					if (err) {
 						console.error("Error setting pulse range." + err);
 						reject(err)
@@ -132,7 +148,7 @@ var pwm = new servoDriver(options, (err) => {
 		dropper() {
 			return new Promise((resolve, reject) => {
 				if(!power) return reject('powered down')
-				pwm.setPulseRange(0, 0, 150, function() {
+				pwm.setPulseRange(0, 0, 150, function(err) {
 					if (err) {
 						console.error("Error setting pulse range." + err);
 						reject(err)
@@ -154,10 +170,10 @@ var pwm = new servoDriver(options, (err) => {
 						camera.takePhoto().then((photo) => {
 							console.log('photo taken')
 							resolve(photo)
-						}).catch(e=>reject)
-					}).catch(e=>reject)
-				}).catch(e=>reject)
-			}).catch(e=>reject)
+						}).catch(e=>reject())
+					}).catch(e=>reject())
+				}).catch(e=>reject())
+			}).catch(e=>reject())
 		})
 	 }
 	 var detectCoin = (image) => {
