@@ -163,10 +163,10 @@ var pwm = new servoDriver(options, (err) => {
 						camera.takePhoto().then((photo) => {
 							console.log('photo taken')
 							resolve(photo)
-						}).catch(e=>reject())
-					}).catch(e=>reject())
-				}).catch(e=>reject())
-			}).catch(e=>reject())
+						}).catch(e=>reject(e))
+					}).catch(e=>reject(e))
+				}).catch(e=>reject(e))
+			}).catch(e=>reject(e))
 		})
 	 }
 	 var detectCoin = (image) => {
@@ -255,7 +255,7 @@ var pwm = new servoDriver(options, (err) => {
 					console.log('coin pictured')
 					io.emit('console', 'coin pictured')
 					io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
-					saveCoin().then((loc) => {
+					saveCoin(coinImage).then((loc) => {
 						io.emit('console', 'photo of coin saved on disk - ' + loc)
 						motors.dropper().then(() => {
 							sleep(500).then(() => {
