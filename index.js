@@ -112,7 +112,7 @@ var pwm = new servoDriver(options, (err) => {
 						reject(err)
 					} else {
 						sleep(400).then(() => {
-							pwm.setPulseRange(0, 0, 400, function(errT) {
+							pwm.setPulseRange(0, 0, 490, function(errT) {
 								if (errT) {
 									reject(err)
 								} else {
