@@ -111,20 +111,12 @@ var pwm = new servoDriver(options, (err) => {
 						console.error("Error setting pulse range." + err);
 						reject(err)
 					} else {
-						sleep(100).then(() => {
-							pwm.setPulseRange(0, 0, 510, function(errT) {
+						sleep(400).then(() => {
+							pwm.setPulseRange(0, 0, 400, function(errT) {
 								if (errT) {
 									reject(err)
 								} else {
-									sleep(100).then(() => {
-										pwm.setPulseRange(0, 0, 530, function (errTh) {
-											if (errTh) {
-												reject(errTh)
-											} else {
-												resolve('OK')
-											}
-										})
-									})
+									resolve('OK')
 								}
 							})
 						})
