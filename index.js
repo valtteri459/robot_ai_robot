@@ -59,6 +59,8 @@ var pwm = new servoDriver(options, (err) => {
 		});
 	 });*/
 	 var power = true /* let motors turn */
+	 var loopCoins = false /* is loop on*/
+		var loadedCoins = 0 /* for data gathering, which coins are on */
 	 var sleep = (ms) => {
 		 return new Promise((resolve, reject) => {
 			 setTimeout(() => {resolve('OK')}, ms)
@@ -145,7 +147,7 @@ var pwm = new servoDriver(options, (err) => {
 		return new Promise((resolve, reject) => {
 			motors.hopper().then(() => {
 				console.log('hopper')
-				sleep(500).then(() => {
+				sleep(1000).then(() => {
 					console.log('sleep')
 					motors.camera().then(() => {
 						console.log('camera')
@@ -226,17 +228,21 @@ var pwm = new servoDriver(options, (err) => {
 			}).catch(e => {console.log(e);io.emit('console', e)})
 		})
 
-		var loopCoins = false;
-		var loadedCoins = 0;
-
 		var coinLooper = () => {
 			if(loopCoins) {
 				console.log('starting scan on coin')
-				sleep(500).then(() => {
-					if(loopCoins) {
-						coinLooper()
-					}
-				}).catch(e => {console.log(e);io.emit('console', e)})
+				pictureCoin().then(coinImage => {
+					console.log('coin pictured')
+					io.emit('console', 'coin pictured')
+					io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
+					motors.dropper().then(() => {
+						sleep(500).then(() => {
+							if(loopCoins) {
+								coinLooper()
+							}
+						}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
+					}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
+				}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
 			}
 		}
 
