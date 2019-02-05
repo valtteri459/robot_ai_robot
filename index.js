@@ -248,7 +248,8 @@ var pwm = new servoDriver(options, (err) => {
 			if(loopCoins) {
 				coinLooper()
 			}
-			io.emit('console', 'loop started')
+			io.emit('console', 'loop state switched')
+			io.emit('loop', newLoop)
 		})
 		socket.on('getCoin', () => {
 			io.emit('coin', loadedCoins)
@@ -256,6 +257,7 @@ var pwm = new servoDriver(options, (err) => {
 		socket.on('setCoin', newCoin => {
 			loadedCoins = newCoin
 			io.emit('console', 'loaded coins set to '+newCoin)
+			io.emit('coin', loadedCoins)
 		})
 
 		io.emit('power', power)
