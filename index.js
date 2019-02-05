@@ -5,6 +5,7 @@ const servoDriver = require('pca9685').Pca9685Driver
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
+const jpeg = require('jpeg-js')
 /* 
 servo 0
 	coin hopper: 530
@@ -219,6 +220,8 @@ var pwm = new servoDriver(options, (err) => {
 		})
 		socket.on('newCoin', () => {
 			pictureCoin().then(coinImage => {
+				var pixels = jpeg.decode(coinImage, true)
+				console.log(pixels[0], pixels[1], pixels[2], pixels[3])
 				socket.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
 			}).catch(e => {console.log(e);socket.emit('console', e)})
 		})

@@ -12,6 +12,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "i2c-bus": "^4.0.7",
+    "jpeg-js": "^0.3.4",
     "node-raspistill": "0.0.16",
     "pca9685": "^4.0.3",
     "pi-camera": "^1.2.1",
