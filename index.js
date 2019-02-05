@@ -222,6 +222,7 @@ var pwm = new servoDriver(options, (err) => {
 			pictureCoin().then(coinImage => {
 				var pixels = jpeg.decode(coinImage, true)
 				console.log(coinImage[0], coinImage[1], coinImage[2], coinImage[3])
+				console.log(pixels)
 				console.log(pixels[0], pixels[1], pixels[2], pixels[3])
 				socket.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
 			}).catch(e => {console.log(e);socket.emit('console', e)})
