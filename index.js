@@ -8,7 +8,9 @@ const io = require('socket.io')(http)
 const jpeg = require('jpeg-js')
 const fs = require('fs')
 const tf = require('@tensorflow/tfjs-node')
-const model = await tf.loadLayersModel('file://./net/model.json')
+tf.loadLayersModel('file://./net/model.json').then(mdl => {
+	const model = mdl
+}).catch(e => console.log(e))
 /* 
 servo 0
 	coin hopper: 530
