@@ -99,6 +99,8 @@ var pwm = new servoDriver(options, (err) => {
 					case 4:
 						slot = 465
 						break;
+					default:
+						break;
 				}
 				pwm.setPulseRange(1, 0, slot, function(err) {
 					if (err) {
@@ -282,6 +284,23 @@ var pwm = new servoDriver(options, (err) => {
 			}
 			return values
 		}
+		function indexOfMax(arr) {
+				if (arr.length === 0) {
+						return -1;
+				}
+		
+				var max = arr[0];
+				var maxIndex = 0;
+		
+				for (var i = 1; i < arr.length; i++) {
+						if (arr[i] > max) {
+								maxIndex = i;
+								max = arr[i];
+						}
+				}
+		
+				return maxIndex;
+		}
 		var coinDetect = (coinImage) => {
 			return new Promise((resolve, reject) => {
 				const imageIntArr = imageToByteArray(jpeg.decode(coinImage))
@@ -290,7 +309,6 @@ var pwm = new servoDriver(options, (err) => {
 					const input = tf.tensor2d(imageIntArr, [1, 100*100*3])
 					var output = model.predict(input.reshape([1,100,100,3]))
 					var predicts = Array.from(output.dataSync())
-					console.log(predicts)
 					if(!predicts)
 					reject('error with model')
 					else
@@ -304,14 +322,22 @@ var pwm = new servoDriver(options, (err) => {
 				pictureCoin().then(coinImage => {
 					coinDetect(coinImage).then(detectResult => {
 						console.log(detectResult)
-						io.emit('console', detectResult)
-						motors.dropper().then(() => {
-							sleep(500).then(() => {
-								if(detectLoop) {
-									detectCoin()
-								}
-							}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);detectLoop = false})
-						}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);detectLoop = false})
+						maxInd = indexOfMax(detectResult)
+						io.emit('console', 'detected category: '+maxInd)
+						if(maxInd === 5){
+							detectLoop = false
+							io.emit('detectLoop', false);
+							io.emit('console', 'stopping due to error')
+						}
+						motors.coinSlot(maxInd).then(() => {
+							motors.dropper().then(() => {
+								sleep(500).then(() => {
+									if(detectLoop) {
+										detectCoin()
+									}
+								}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
+							}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
+						}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
 					}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
 				}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
 			}
