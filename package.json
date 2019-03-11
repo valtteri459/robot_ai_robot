@@ -9,6 +9,7 @@
   "author": "valtteri",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow/tfjs-node": "^0.3.2",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "i2c-bus": "^4.0.7",

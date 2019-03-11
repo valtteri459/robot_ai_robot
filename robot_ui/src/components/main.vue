@@ -33,12 +33,6 @@
       </v-flex>
       <v-flex xs6>
         <h1 class="display-2 font-weight-bold mb-3">
-          konsoli
-        </h1>
-        <textarea disabled v-model='consoleData' style="width:100%;min-height:250px"></textarea>
-      </v-flex>
-      <v-flex xs6>
-        <h1 class="display-2 font-weight-bold mb-3">
           Kolikkojen massakuvaus
         </h1>
         <label>ladattu kolikkotyyppi: </label>
@@ -46,6 +40,19 @@
         <v-btn color="primary" @click="setCoin()">Aseta kolikko</v-btn>
         <v-btn color="primary" @click="switchLoop()">{{loop ? 'sammuta' : 'käynnistä'}}</v-btn><br/>
         <img :src='imageData' v-if='imageData'/>
+      </v-flex>
+      <v-flex xs6>
+        <h1 class="display-2 font-weight-bold mb-3">
+          Kolikkojen automaattitunnistus
+        </h1>
+        <v-btn color="primary" @click="switchDetectLoop()">{{detectLoop ? 'sammuta' : 'käynnistä'}}</v-btn><br/>
+        <img :src='imageData' v-if='imageData'/>
+      </v-flex>
+      <v-flex xs12>
+        <h1 class="display-2 font-weight-bold mb-3">
+          konsoli
+        </h1>
+        <textarea disabled v-model='consoleData' style="width:100%;min-height:250px"></textarea>
       </v-flex>
     </v-layout>
   </v-container>
@@ -58,7 +65,8 @@ export default {
     imageData: false,
     consoleData: '',
     coin: 0,
-    loop: false
+    loop: false,
+    detectLoop: false
   }),
   methods: {
     // 'newPhoto', 'rotor (0,1,2)', 'slot(num, 0,1,2,3,4)
@@ -69,6 +77,9 @@ export default {
     },
     switchLoop () {
       this.$socket.emit('setLoop', !this.loop)
+    },
+    switchDetectLoop () {
+      this.$socket.emit('setDetectLoop', !this.detectLoop)
     },
     slot (slotNum) {
       this.$socket.emit('slot', slotNum)
@@ -106,6 +117,9 @@ export default {
     },
     loop (loopStatus) {
       this.loop = loopStatus
+    },
+    detectLoop (loopStatus) {
+      this.detectLoop = loopStatus
     }
   },
   mounted () {

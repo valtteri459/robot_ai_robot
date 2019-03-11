@@ -7,6 +7,8 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const jpeg = require('jpeg-js')
 const fs = require('fs')
+const tf = require('@tensorflow/tfjs-node')
+const model = tf.loadGraphModel('./net/model.json')
 /* 
 servo 0
 	coin hopper: 530
@@ -61,7 +63,8 @@ var pwm = new servoDriver(options, (err) => {
 	 });*/
 	 var power = true /* let motors turn */
 	 var loopCoins = false /* is loop on*/
-		var loadedCoins = 0 /* for data gathering, which coins are on */
+	 var detectLoop = false
+	 var loadedCoins = 0 /* for data gathering, which coins are on */
 	 var sleep = (ms) => {
 		 return new Promise((resolve, reject) => {
 			 setTimeout(() => {resolve('OK')}, ms)
@@ -169,9 +172,6 @@ var pwm = new servoDriver(options, (err) => {
 			}).catch(e=>reject(e))
 		})
 	 }
-	 var detectCoin = (image) => {
-		
-	 }
 	 var saveCoin = (image) => {
 		return new Promise((resolve, reject) => {
 			var filename = __dirname + '/train_images/'+loadedCoins+'/'+Date.now()+'.jpg'
@@ -243,7 +243,6 @@ var pwm = new servoDriver(options, (err) => {
 		socket.on('newCoin', () => {
 			pictureCoin().then(coinImage => {
 				var pixels = jpeg.decode(coinImage, true)
-				console.log(pixels)
 				io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
 			}).catch(e => {console.log(e);io.emit('console', e)})
 		})
@@ -268,9 +267,55 @@ var pwm = new servoDriver(options, (err) => {
 				}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);loopCoins = false})
 			}
 		}
+		var imageToByteArray = (image) => {
+			const pixels = image.data
+			const numPixels = image.width * image.height;
+			const values = new Int32Array(numPixels * 3);
+
+			for (let i = 0; i < numPixels; i++) {
+				for (let channel = 0; channel < 3; ++channel) {
+					values[i * 3 + channel] = pixels[i * 4 + channel];
+				}
+			}
+			return values
+		}
+		var coinDetect = (coinImage) => {
+			return new Promise((resolve, reject) => {
+				const imageIntArr = imageToByteArray(jpeg.decode(coinImage))
+
+				tf.tidy(() => {
+					const input = tf.tensor2d(imageIntArr, [1, 100*100*3])
+					var output = model.predict(input.reshape([1,100,100,3]))
+					var predicts = Array.from(output.dataSync())
+					console.log(predicts)
+					resolve(predicts)
+				})
+			})
+		}
+		var detectCoin = () => {
+			if(detectLoop) {
+				console.log('scanning coin')
+				pictureCoin().then(coinImage => {
+					coinDetect(coinImage).then(detectResult => {
+						console.log(detectResult)
+						io.emit('console', detectResult)
+						motors.dropper().then(() => {
+							sleep(500).then(() => {
+								if(detectLoop) {
+									detectCoin()
+								}
+							}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);detectLoop = false})
+						}).catch(e => {console.log(e);io.emit('console', e);io.emit('loop', false);detectLoop = false})
+					}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
+				}).catch(e => {console.log(e);io.emit('console', e);io.emit('detectLoop', false);detectLoop = false})
+			}
+		}
 
 		socket.on('getLoop', () => {
 			io.emit('loop', loopCoins)
+		})
+		socket.on('getDetectLoop', () => {
+			io.emit('detectLoop', detectLoop)
 		})
 		socket.on('setLoop', newLoop => {
 			loopCoins = newLoop
@@ -288,7 +333,16 @@ var pwm = new servoDriver(options, (err) => {
 			io.emit('console', 'loaded coins set to '+newCoin)
 			io.emit('coin', loadedCoins)
 		})
-
+		socket.on('setDetectLoop', newDloop => {
+			detectLoop = newDloop
+			if(detectLoop) {
+				detectCoin()
+				io.emit('console', 'coin detect started')
+			}
+			io.emit('console', 'setDetectLoop set to ' + newDloop)
+			io.emit('detectLoop', detectLoop)
+		})
+		io.emit('detectLoop', detectLoop)
 		io.emit('power', power)
 		io.emit('loop', loopCoins)
 		io.emit('coin', loadedCoins)
