@@ -8,7 +8,7 @@ const io = require('socket.io')(http)
 const jpeg = require('jpeg-js')
 const fs = require('fs')
 const tf = require('@tensorflow/tfjs-node')
-const model = tf.loadGraphModel('./net/model.json')
+const model = tf.loadGraphModel('file://./net/model.json')
 /* 
 servo 0
 	coin hopper: 530
