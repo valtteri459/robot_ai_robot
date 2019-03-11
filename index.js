@@ -324,6 +324,7 @@ var pwm = new servoDriver(options, (err) => {
 						console.log(detectResult)
 						maxInd = indexOfMax(detectResult)
 						io.emit('console', 'detected category: '+maxInd)
+						io.emit('coinPhoto', 'data:image/jpg;base64,' + coinImage.toString('base64'))
 						if(maxInd === 5){
 							detectLoop = false
 							io.emit('detectLoop', false);
