@@ -8,7 +8,7 @@ const io = require('socket.io')(http)
 const jpeg = require('jpeg-js')
 const fs = require('fs')
 const tf = require('@tensorflow/tfjs-node')
-const model = tf.loadGraphModel('file://./net/model.json')
+const model = tf.loadLayersModel('file://./net/model.json')
 /* 
 servo 0
 	coin hopper: 530
@@ -288,6 +288,9 @@ var pwm = new servoDriver(options, (err) => {
 					var output = model.predict(input.reshape([1,100,100,3]))
 					var predicts = Array.from(output.dataSync())
 					console.log(predicts)
+					if(!predicts)
+					reject('error with model')
+					else
 					resolve(predicts)
 				})
 			})
