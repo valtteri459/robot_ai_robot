@@ -8,8 +8,9 @@ const io = require('socket.io')(http)
 const jpeg = require('jpeg-js')
 const fs = require('fs')
 const tf = require('@tensorflow/tfjs-node')
+let model = null
 tf.loadLayersModel('file://./net/model.json').then(mdl => {
-	const model = mdl
+	model = mdl
 }).catch(e => console.log(e))
 /* 
 servo 0
