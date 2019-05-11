@@ -4,7 +4,7 @@ import App from './App.vue'
 import VueSocketIO from 'vue-socket.io'
 Vue.use(new VueSocketIO({
   debug: false,
-  connection: './'
+  connection: window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '')
 }))
 Vue.config.productionTip = false
 
