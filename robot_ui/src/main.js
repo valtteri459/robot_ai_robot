@@ -4,7 +4,7 @@ import App from './App.vue'
 import VueSocketIO from 'vue-socket.io'
 Vue.use(new VueSocketIO({
   debug: false,
-  connection: 'http://localhost:8080'
+  connection: './'
 }))
 Vue.config.productionTip = false
 
